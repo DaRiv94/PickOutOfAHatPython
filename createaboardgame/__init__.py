@@ -33,8 +33,8 @@ def main(req: func.HttpRequest, boardgameTable: func.Out[str]) -> func.HttpRespo
 
     boardgameTable.set(json.dumps(data))
 
-    
     return func.HttpResponse(
-            f"This HTTP triggered function executed successfully. added {data} to table boardgames",
-            status_code=200
+        json.dumps({"new_game":data}),
+        status_code=200,
+        mimetype="application/json"
     )
