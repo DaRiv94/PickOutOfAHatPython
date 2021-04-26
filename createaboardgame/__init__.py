@@ -7,7 +7,7 @@ import azure.functions as func
 #https://docs.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings?tabs=python
 #https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-table-output?tabs=python
 
-def main(req: func.HttpRequest, boardgameTable: func.Out[str]) -> func.HttpResponse:
+def main(req: func.HttpRequest, boardgameTable: func.Out[str], existingBoardgameTableData) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
     
     boardgame_name=''
@@ -24,6 +24,20 @@ def main(req: func.HttpRequest, boardgameTable: func.Out[str]) -> func.HttpRespo
         "please pass 'boardgame_name' in post body",
         status_code=400
         )
+
+    #Check for existing boardgame
+    list_of_games = json.loads(existingBoardgameTableData)
+    logging.info(f'list_of_games :{list_of_games}')
+    exists = False
+    for game in list_of_games:
+        if boardgame_name == game['game']:
+            exists = True
+    if exists:
+        return func.HttpResponse(
+        "that boardgame already exists, please send another.",
+        status_code=400
+        )
+
 
     data = {
         "game": boardgame_name,
